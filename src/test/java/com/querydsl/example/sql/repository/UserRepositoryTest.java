@@ -18,45 +18,9 @@ import org.junit.Test;
 
 import com.querydsl.example.sql.model.User;
 
-public class UserRepositoryTest {
+public class UserRepositoryTest extends AbstractPersistenceTest {
     @Inject
     private UserRepository repository;
-
-    @Before
-    public void before() {
-        try {
-            Class.forName("org.h2.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        try (Connection connection = DriverManager.getConnection("jdbc:h2:h2", "sa", "")) {
-            List<String> tables = new ArrayList<String>();
-            DatabaseMetaData md = connection.getMetaData();
-            ResultSet rs = md.getTables(null, null, null, new String[] {"TABLE"});
-            try {
-                while (rs.next()) {
-                    tables.add(rs.getString("TABLE_NAME"));
-                }
-            } finally {
-                rs.close();
-            }
-
-            java.sql.Statement stmt = connection.createStatement();
-            try {
-                stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
-                for (String table : tables) {
-                    stmt.execute("TRUNCATE TABLE " + table);
-                }
-                stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
-            } finally {
-                stmt.close();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 
     @Test
     public void save_and_get_by_id() {
