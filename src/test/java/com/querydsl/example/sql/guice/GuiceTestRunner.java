@@ -5,7 +5,6 @@ import org.junit.runners.model.InitializationError;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.querydsl.example.sql.guice.ServiceModule;
 
 public class GuiceTestRunner extends BlockJUnit4ClassRunner {
 

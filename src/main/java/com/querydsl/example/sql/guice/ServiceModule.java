@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.matcher.Matchers;
 import com.google.inject.name.Names;
 import com.mchange.v2.c3p0.DataSources;
 import com.mysema.query.sql.H2Templates;
@@ -29,6 +30,10 @@ public class ServiceModule extends AbstractModule {
             bind(String.class).annotatedWith(Names.named((String)entry.getKey()))
                     .toInstance((String) entry.getValue());
         }
+
+        TransactionInterceptor intercepter = new TransactionInterceptor();
+        requestInjection(intercepter);
+        bindInterceptor(Matchers.any(), Matchers.annotatedWith(Transactional.class), intercepter);
     }
 
     @Provides
@@ -48,7 +53,7 @@ public class ServiceModule extends AbstractModule {
             return DataSources.pooledDataSource(DataSources.unpooledDataSource(
                     url, user, password));
 
-        } catch (SQLException|ClassNotFoundException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
