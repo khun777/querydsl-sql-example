@@ -2,9 +2,11 @@ package com.querydsl.example.sql.repository;
 
 import static com.querydsl.example.sql.model.QTweet.tweet;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.querydsl.example.sql.model.Tweet;
@@ -16,13 +18,18 @@ public class TweetRepositoryTest extends AbstractPersistenceTest {
 
     @Inject
     private UserRepository userRepository;
-
-    @Test
-    public void save_and_find_by_id() {
+    
+    private Long posterId;
+    
+    @Before
+    public void setUp() {
         User poster = new User();
         poster.setUsername("dr_frank");
-        Long posterId = userRepository.save(poster);
+        posterId = userRepository.save(poster);
+    }
 
+    @Test
+    public void save_and_find_by_id() {       
         String content = "I am alive! #YOLO";
         Tweet tweet = new Tweet();
         tweet.setContent(content);
@@ -30,13 +37,20 @@ public class TweetRepositoryTest extends AbstractPersistenceTest {
         Long id = repository.save(tweet);
         assertEquals(content, repository.findById(id).getContent());
     }
+    
+    @Test
+    public void save_and_find_by_username() {
+        String content = "I am alive! #YOLO";
+        Tweet tweet = new Tweet();
+        tweet.setContent(content);
+        tweet.setPosterId(posterId);
+        repository.save(tweet);
+        
+        assertFalse(repository.findOfUser("dr_frank").isEmpty());
+    }
 
     @Test
     public void find_list_by_predicate() {
-        User poster = new User();
-        poster.setUsername("dr_frank");
-        Long posterId = userRepository.save(poster);
-
         Tweet tw1 = new Tweet();
         tw1.setPosterId(posterId);
         tw1.setContent("It is a alive! #YOLO");
