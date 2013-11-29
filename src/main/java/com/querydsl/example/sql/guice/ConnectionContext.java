@@ -7,14 +7,19 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 
 public class ConnectionContext {
-    @Inject
-    private DataSource dataSource;
 
+    private final DataSource dataSource;
+    
     private final ThreadLocal<Connection> connectionHolder = new ThreadLocal<Connection>();
 
-    public Connection getConnection() {
+    @Inject
+    public ConnectionContext(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+    
+    public Connection getConnection(boolean create) {
         Connection connection = connectionHolder.get();
-        if (connection != null) {
+        if (!create || connection != null) {
             return connection;
         }
         try {
@@ -24,6 +29,10 @@ public class ConnectionContext {
         }
         connectionHolder.set(connection);
         return connection;
+    }
+    
+    public Connection getConnection() {
+        return connectionHolder.get();
     }
 
     public void removeConnection() {

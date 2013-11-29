@@ -19,7 +19,7 @@ public class TransactionInterceptor implements MethodInterceptor {
         if (annotation == null) {
             return invocation.proceed();
         }
-        Connection connection = context.getConnection();
+        Connection connection = context.getConnection(true);
         connection.setAutoCommit(false);
         try {
             Object rv = invocation.proceed();

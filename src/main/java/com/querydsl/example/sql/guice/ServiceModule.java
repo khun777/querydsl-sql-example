@@ -11,11 +11,14 @@ import javax.sql.DataSource;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.Scopes;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.name.Names;
 import com.mchange.v2.c3p0.DataSources;
+import com.mysema.query.sql.Configuration;
 import com.mysema.query.sql.H2Templates;
-import com.mysema.query.sql.SQLTemplates;
+import com.querydsl.example.sql.repository.TweetRepository;
+import com.querydsl.example.sql.repository.UserRepository;
 
 public class ServiceModule extends AbstractModule {
     @Override
@@ -30,16 +33,20 @@ public class ServiceModule extends AbstractModule {
             bind(String.class).annotatedWith(Names.named((String)entry.getKey()))
                     .toInstance((String) entry.getValue());
         }
+        
+        bind(ConnectionContext.class).in(Scopes.SINGLETON);
+        bind(TweetRepository.class).in(Scopes.SINGLETON);
+        bind(UserRepository.class).in(Scopes.SINGLETON);
 
-        TransactionInterceptor intercepter = new TransactionInterceptor();
-        requestInjection(intercepter);
-        bindInterceptor(Matchers.any(), Matchers.annotatedWith(Transactional.class), intercepter);
+        TransactionInterceptor interceptor = new TransactionInterceptor();
+        requestInjection(interceptor);
+        bindInterceptor(Matchers.any(), Matchers.annotatedWith(Transactional.class), interceptor);        
     }
 
     @Provides
     @Singleton
-    public SQLTemplates templates() {
-        return new H2Templates();
+    public Configuration configuration() {
+        return new Configuration(new H2Templates());
     }
 
     @Provides

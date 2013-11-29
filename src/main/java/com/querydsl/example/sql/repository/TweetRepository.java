@@ -5,8 +5,8 @@ import static com.querydsl.example.sql.model.QUser.user;
 
 import java.util.List;
 
-import com.google.inject.persist.Transactional;
 import com.mysema.query.types.expr.BooleanExpression;
+import com.querydsl.example.sql.guice.Transactional;
 import com.querydsl.example.sql.model.Tweet;
 
 public class TweetRepository extends AbstractRepository {

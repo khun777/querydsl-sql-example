@@ -9,12 +9,12 @@ import com.querydsl.example.sql.model.User;
 
 public class UserRepository extends AbstractRepository {
     @Transactional
-    public User findById(final Long id) {
+    public User findById(Long id) {
         return from(user).where(user.id.eq(id)).singleResult(user);
     }
 
     @Transactional
-    public Long save(final User entity) {
+    public Long save(User entity) {
         if (entity.getId() != null) {
             update(user).populate(entity).execute();
             return entity.getId();
