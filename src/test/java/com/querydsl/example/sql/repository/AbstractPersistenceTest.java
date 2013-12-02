@@ -13,8 +13,8 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 
-import com.google.inject.persist.Transactional;
 import com.querydsl.example.sql.guice.GuiceTestRunner;
+import com.querydsl.example.sql.guice.Transactional;
 
 @RunWith(GuiceTestRunner.class)
 public abstract class AbstractPersistenceTest {

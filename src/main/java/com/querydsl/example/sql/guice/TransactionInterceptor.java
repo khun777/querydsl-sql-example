@@ -16,7 +16,7 @@ public class TransactionInterceptor implements MethodInterceptor {
     public Object invoke(MethodInvocation invocation) throws Throwable {
         Method method = invocation.getMethod();
         Transactional annotation = method.getAnnotation(Transactional.class);
-        if (annotation == null) {
+        if (annotation == null || context.getConnection() != null) {
             return invocation.proceed();
         }
         Connection connection = context.getConnection(true);
