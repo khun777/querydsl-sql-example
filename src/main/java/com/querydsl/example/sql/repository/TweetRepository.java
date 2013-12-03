@@ -7,9 +7,11 @@ import static com.querydsl.example.sql.model.QUser.user;
 
 import java.util.List;
 
+import com.mysema.query.sql.dml.SQLInsertClause;
 import com.mysema.query.types.Predicate;
 import com.querydsl.example.sql.guice.Transactional;
 import com.querydsl.example.sql.model.Tweet;
+import com.querydsl.example.sql.model.TweetUser;
 
 public class TweetRepository extends AbstractRepository {
     @Transactional
@@ -21,7 +23,21 @@ public class TweetRepository extends AbstractRepository {
         return insert(tweet).populate(entity)
                 .executeWithKey(user.id);
     }
-
+    
+    @Transactional
+    public Long save(Tweet tweet, Long... mentions) {
+        Long tweetId = save(tweet);
+        SQLInsertClause insert = insert(tweetUser);
+        for (Long mentionsId : mentions) {
+            TweetUser tu = new TweetUser();
+            tu.setTweetId(tweetId);
+            tu.setMentionsId(mentionsId);
+            insert.populate(tu).addBatch();                        
+        }
+        insert.execute();
+        return tweetId;
+    }
+    
     @Transactional
     public Tweet findById(Long id) {
         return from(tweet).where(tweet.id.eq(id)).singleResult(tweet);
