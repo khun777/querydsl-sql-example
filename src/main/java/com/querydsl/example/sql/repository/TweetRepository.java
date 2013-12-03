@@ -2,6 +2,7 @@ package com.querydsl.example.sql.repository;
 
 import static com.querydsl.example.sql.model.QLocation.location;
 import static com.querydsl.example.sql.model.QTweet.tweet;
+import static com.querydsl.example.sql.model.QTweetUser.tweetUser;
 import static com.querydsl.example.sql.model.QUser.user;
 
 import java.util.List;
@@ -30,6 +31,14 @@ public class TweetRepository extends AbstractRepository {
     public List<Tweet> findOfUser(String username) {
         return from(user)
                 .innerJoin(tweet).on(tweet.posterId.eq(user.id))
+                .list(tweet);
+    }
+    
+    @Transactional
+    public List<Tweet> findWithMentioned(Long userId) {
+        return from(tweet)
+                .innerJoin(tweetUser).on(tweet.id.eq(tweetUser.tweetId))
+                .where(tweetUser.mentionsId.eq(userId))
                 .list(tweet);
     }
     
